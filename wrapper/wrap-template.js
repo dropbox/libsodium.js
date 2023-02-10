@@ -618,4 +618,4 @@
   _onload && root.sodium.ready.then(function () {
     _onload(root.sodium)
   });
-})(this);
+})(globalThis);

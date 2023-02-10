@@ -47,28 +47,36 @@ pack: targets
 $(MODULES_DIR)/libsodium-wrappers.js: wrapper/build-wrappers.js wrapper/build-doc.js wrapper/wrap-template.js
 	@echo +++ Building standard/libsodium-wrappers.js
 	mkdir -p $(MODULES_DIR)
-	$(NODE) wrapper/build-wrappers.js libsodium API.md $(MODULES_DIR)/libsodium-wrappers.js
+	$(NODE) wrapper/build-wrappers.js ./libsodium API.md $(MODULES_DIR)/libsodium-wrappers.js
 
 $(MODULES_SUMO_DIR)/libsodium-wrappers.js: wrapper/build-wrappers.js wrapper/build-doc.js wrapper/wrap-template.js
 	@echo +++ Building sumo/libsodium-wrappers.js
 	mkdir -p $(MODULES_SUMO_DIR)
-	$(NODE) wrapper/build-wrappers.js libsodium-sumo API_sumo.md $(MODULES_SUMO_DIR)/libsodium-wrappers.js
+	$(NODE) wrapper/build-wrappers.js ./libsodium-sumo API_sumo.md $(MODULES_SUMO_DIR)/libsodium-wrappers.js
 
-$(MODULES_DIR)/libsodium.js: wrapper/libsodium-pre.js wrapper/libsodium-post.js $(MODULES_DIR)/libsodium-wrappers.js $(LIBSODIUM_JS_DIR)/lib/libsodium.js
+$(MODULES_DIR)/libsodium.js: wrapper/libsodium-pre.js wrapper/libsodium-post.js $(MODULES_DIR)/libsodium-wrappers.js $(LIBSODIUM_JS_DIR)/lib/libsodium.js $(LIBSODIUM_JS_DIR)/lib/libsodium.js.mem $(LIBSODIUM_JS_DIR)/lib/libsodium.wasm
 	@echo +++ Building standard/libsodium
 	mkdir -p $(MODULES_DIR)
 	cat wrapper/libsodium-pre.js $(LIBSODIUM_JS_DIR)/lib/libsodium.js wrapper/libsodium-post.js > $(MODULES_DIR)/libsodium.js
+	cp $(LIBSODIUM_JS_DIR)/lib/libsodium.js.mem $(MODULES_DIR)/libsodium.js.mem
+	cp $(LIBSODIUM_JS_DIR)/lib/libsodium.wasm $(MODULES_DIR)/libsodium.wasm
 
 	mkdir -p $(BROWSERS_DIR)
 	cat $(MODULES_DIR)/libsodium.js $(MODULES_DIR)/libsodium-wrappers.js > $(BROWSERS_DIR)/sodium.js
+	cp $(MODULES_DIR)/libsodium.js.mem $(BROWSERS_DIR)/libsodium.js.mem
+	cp $(MODULES_DIR)/libsodium.wasm $(BROWSERS_DIR)/libsodium.wasm
 
-$(MODULES_SUMO_DIR)/libsodium-sumo.js: wrapper/libsodium-pre.js wrapper/libsodium-post.js $(MODULES_SUMO_DIR)/libsodium-wrappers.js $(LIBSODIUM_JS_SUMO_DIR)/lib/libsodium.js
+$(MODULES_SUMO_DIR)/libsodium-sumo.js: wrapper/libsodium-pre.js wrapper/libsodium-post.js $(MODULES_SUMO_DIR)/libsodium-wrappers.js $(LIBSODIUM_JS_SUMO_DIR)/lib/libsodium.js $(LIBSODIUM_JS_SUMO_DIR)/lib/libsodium.js.mem $(LIBSODIUM_JS_SUMO_DIR)/lib/libsodium.wasm
 	@echo +++ Building sumo/libsodium
 	mkdir -p $(MODULES_SUMO_DIR)
 	cat wrapper/libsodium-pre.js $(LIBSODIUM_JS_SUMO_DIR)/lib/libsodium.js wrapper/libsodium-post.js > $(MODULES_SUMO_DIR)/libsodium-sumo.js
+	cp $(LIBSODIUM_JS_SUMO_DIR)/lib/libsodium.js.mem $(MODULES_SUMO_DIR)/libsodium.js.mem
+	cp $(LIBSODIUM_JS_SUMO_DIR)/lib/libsodium.wasm $(MODULES_SUMO_DIR)/libsodium.wasm
 
 	mkdir -p $(BROWSERS_SUMO_DIR)
 	cat $(MODULES_SUMO_DIR)/libsodium-sumo.js $(MODULES_SUMO_DIR)/libsodium-wrappers.js > $(BROWSERS_SUMO_DIR)/sodium.js
+	cp $(MODULES_SUMO_DIR)/libsodium.js.mem $(BROWSERS_SUMO_DIR)/libsodium.js.mem
+	cp $(MODULES_SUMO_DIR)/libsodium.wasm $(BROWSERS_SUMO_DIR)/libsodium.wasm
 
 $(LIBSODIUM_DIR)/test/default/browser/sodium_core.html: $(LIBSODIUM_DIR)/configure
 	cd $(LIBSODIUM_DIR) && ./dist-build/emscripten.sh --browser-tests
